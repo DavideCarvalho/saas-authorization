@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Company {
+  id                       String                     @id @default(uuid())
+  name                     String
+  CompanyClientCredentials CompanyClientCredentials[]
+  Roles                    Role[]
+  Actions                  Action[]
+  CompanyUsers             CompanyUser[]
+}
+
+model CompanyClientCredentials {
+  secret       String   @id
+  name         String
+  companyId    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastTimeUsed DateTime
+  enabled      Boolean  @default(true)
+  Company      Company  @relation(fields: [companyId], references: [id])
+}
+
+model Action {
+  id           String        @id @default(uuid())
+  companyId    String
+  name         String
+  description  String
+  Company      Company       @relation(fields: [companyId], references: [id])
+  CompanyUsers CompanyUser[]
+
+  @@unique([id, companyId])
+}
+
+model Role {
+  id           String        @id @default(uuid())
+  companyId    String
+  name         String
+  description  String
+  Company      Company       @relation(fields: [companyId], references: [id])
+  CompanyUsers CompanyUser[]
+}
+
+model CompanyUser {
+  id        String   @id @default(uuid())
+  companyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Company   Company? @relation(fields: [companyId], references: [id])
+  Actions   Action[]
+  Roles     Role[]
+
+  @@unique([id, companyId])
+}
