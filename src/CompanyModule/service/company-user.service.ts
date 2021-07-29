@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateCompanyUserDTO } from '../dto/create-company-user.dto';
 import { UpdateCompanyUserDTO } from '../dto/update-company-user.dto copy';
@@ -75,5 +75,14 @@ export class CompanyUserService {
     return this.prisma.companyUser.delete({
       where: { id_companyId: { id: companyUserId, companyId } },
     });
+  }
+
+  authorizeUser(companyUserId: string, companyId: string) {
+    const user = this.prisma.companyUser.findUnique({
+      where: { id_companyId: { id: companyUserId, companyId } },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
   }
 }

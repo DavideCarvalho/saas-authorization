@@ -37,6 +37,8 @@ model Action {
   description  String
   Company      Company       @relation(fields: [companyId], references: [id])
   CompanyUsers CompanyUser[]
+  Role         Role?         @relation(fields: [roleId], references: [id])
+  roleId       String?
 
   @@unique([id, companyId])
 }
@@ -47,7 +49,10 @@ model Role {
   name         String
   description  String
   Company      Company       @relation(fields: [companyId], references: [id])
+  Actions      Action[]
   CompanyUsers CompanyUser[]
+
+  @@unique([id, companyId])
 }
 
 model CompanyUser {

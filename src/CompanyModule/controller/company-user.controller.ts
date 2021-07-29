@@ -9,6 +9,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { CreateCompanyUserDTO } from '../dto/create-company-user.dto';
 import { UpdateCompanyUserDTO } from '../dto/update-company-user.dto copy';
@@ -16,7 +17,7 @@ import { CompanyUserService } from '../service/company-user.service';
 import { CompanyClientCredentialsGuard } from '../../CommonModule/guard/company-client-credentials.guard';
 
 @Controller({
-  path: '/company/user',
+  path: '/user',
   version: '1',
 })
 export class CompanyUserController {
@@ -53,6 +54,16 @@ export class CompanyUserController {
   @Delete(':id')
   @UseGuards(CompanyClientCredentialsGuard)
   public delete(@Param('id') id: string, @Req() request: RequestWithCompanyId) {
-    return this.companyUserService.delete(request.companyId, id);
+    this.companyUserService.delete(request.companyId, id);
+  }
+
+  @HttpCode(200)
+  @Post('/:id/authorize')
+  @UseGuards(CompanyClientCredentialsGuard)
+  public authorizeUser(
+    @Param('id') id: string,
+    @Req() request: RequestWithCompanyId,
+  ) {
+    return this.companyUserService.authorizeUser(id, request.companyId);
   }
 }
